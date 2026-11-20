@@ -1,0 +1,36 @@
+name: Build FOUR4 CUT PRO for Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Get source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build EXE
+        run: pyinstaller --noconfirm --clean --onefile --windowed --name FOUR4_CUT_PRO FOUR4_CUT_PRO.py
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: FOUR4-CUT-PRO-Windows-EXE
+          path: dist/FOUR4_CUT_PRO.exe
+          if-no-files-found: error
